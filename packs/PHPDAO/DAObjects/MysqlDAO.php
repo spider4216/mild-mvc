@@ -19,6 +19,13 @@ class MysqlDAO implements GeneralDAO
 	 */
 	private $query = [];
 
+	public function setClass(string $className):GeneralDAO
+	{
+		$this->query['class'] = $className;
+
+		return $this;
+	}
+
 	/**
 	 * @author farZa
 	 * @param string $tableName
@@ -282,6 +289,10 @@ class MysqlDAO implements GeneralDAO
 		$stmt = $pdo->prepare($sql);
 		$stmt->execute($params);
 
+		if (isset($this->query['class'])) {
+			return $stmt->fetchAll(\PDO::FETCH_CLASS, $this->query['class']);
+		}
+
 		return $stmt->fetchAll(\PDO::FETCH_ASSOC);
 	}
 
@@ -290,7 +301,7 @@ class MysqlDAO implements GeneralDAO
 	 * @return array
 	 * Get one record by condition
 	 */
-	public function fetchRow():array
+	public function fetchRow()
 	{
 		/** @var \PDO $pdo */
 		$pdo = ConnectionsPool::getConnection('MysqlDAO');
@@ -315,6 +326,11 @@ class MysqlDAO implements GeneralDAO
 
 		$stmt = $pdo->prepare($sql);
 		$stmt->execute($params);
+
+		if (isset($this->query['class'])) {
+			$stmt->setFetchMode(\PDO::FETCH_CLASS, $this->query['class']);
+			return $stmt->fetch(\PDO::FETCH_CLASS);
+		}
 
 		return $stmt->fetch(\PDO::FETCH_ASSOC);
 	}
