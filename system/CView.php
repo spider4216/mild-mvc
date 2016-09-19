@@ -1,6 +1,7 @@
 <?php
 
 namespace system;
+use system\SystemController;
 
 class CView
 {
@@ -22,6 +23,13 @@ class CView
 		include($fullPath);
 		$content = ob_get_clean();
 
-		echo $content;
+		/**
+		 * Подключаем Layout
+		 */
+		ob_start();
+		include SystemController::$layout;
+		$finalContent = ob_get_clean();
+
+		echo $finalContent;
 	}
 }
