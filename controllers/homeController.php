@@ -4,6 +4,7 @@ namespace controllers;
 use system\CView;
 use system\SystemController;
 use system\App;
+use models\Page;
 
 /**
  * Class homeController

@@ -67,6 +67,17 @@ class CActiveRecord implements IActiveRecord
             ->table(static::$table)
             ->execute();
     }
+    
+    protected function delete()
+    {
+        return App::$db
+            ->delete()
+            ->from(static::$table)
+            ->where([
+                'id' => $this->data['id']
+            ])
+            ->execute();
+    }
 
     public function save():bool
     {
@@ -75,5 +86,10 @@ class CActiveRecord implements IActiveRecord
         }
 
         return $this->insert();
+    }
+    
+    public function remove():bool
+    {
+        return $this->delete();
     }
 }
