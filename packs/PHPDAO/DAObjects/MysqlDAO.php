@@ -132,6 +132,21 @@ class MysqlDAO implements GeneralDAO
 
 	/**
 	 * @author farZa
+	 * @param string $joinTable
+	 * @param string $data
+	 * @return \packs\PHPDAO\DAObjects\GeneralDAO
+	 */
+	public function innerJoin(string $joinTable, string $data):GeneralDAO
+	{
+		$this->query['innerJoin'][] = [
+			$joinTable => $data,
+		];
+
+		return $this;
+	}
+
+	/**
+	 * @author farZa
 	 * @param string $type
 	 * @return array
 	 * Generate data for query by type
@@ -181,8 +196,8 @@ class MysqlDAO implements GeneralDAO
 
 			case 'where' :
 				foreach ($this->query['where'] as $key => $value) {
-					$values[] = $key . ' = :' . $key;
-					$params[':' . $key] = $value;
+					$values[] = $key . ' = :' . str_replace('.', '_', $key);
+					$params[':' . str_replace('.', '_', $key)] = $value;
 				}
 
 				$valueString = implode(' ' . $this->query['sep'] . ' ', $values);
@@ -286,6 +301,14 @@ class MysqlDAO implements GeneralDAO
 
 		$sql = 'SELECT ' . $this->query['select'] . ' FROM ' . $this->query['table'];
 		$params = [];
+
+		if (isset($this->query['innerJoin'])) {
+			foreach ($this->query['innerJoin'] as $data) {
+				foreach ($data as $tableName => $value) {
+					$sql .= ' INNER JOIN ' . $tableName . ' ON '. $value;
+				}
+			}
+		}
 
 		if (isset($this->query['orderBy'])){
 			$sql .= ' ORDER BY ' . $this->query['orderBy'];
