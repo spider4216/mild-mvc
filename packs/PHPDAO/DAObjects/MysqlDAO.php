@@ -352,6 +352,13 @@ class MysqlDAO implements GeneralDAO
 		$sql = 'SELECT ' . $this->query['select'] . ' FROM ' . $this->query['table'];
 		$params = [];
 
+		if (isset($this->query['innerJoin'])) {
+			foreach ($this->query['innerJoin'] as $data) {
+				foreach ($data as $tableName => $value) {
+					$sql .= ' INNER JOIN ' . $tableName . ' ON '. $value;
+				}
+			}
+		}
 
 		if (isset($this->query['where'])) {
 			$whereResult = $this->generateValues('where');
